@@ -2,6 +2,7 @@ from django.db import migrations
 
 
 def create_groups(apps, shema_migration):
+
     User = apps.get_model('crm', 'User')
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
@@ -27,25 +28,19 @@ def create_groups(apps, shema_migration):
     view_user = Permission.objects.get(codename='view_user')
 
     management_permissions = [
-        add_client,
-        change_client,
-        delete_client,
-        view_client,
-        add_user,
-        change_user,
-        delete_user,
-        view_user
+        add_client, change_client, delete_client, view_client,
+        add_user, change_user, delete_user, view_user,
+        add_event, change_event, delete_event, view_event,
+        add_contrat, change_contrat, delete_contrat, view_contrat
     ]
     sales_permissions = [
-        add_contrat,
-        change_contrat,
-        delete_contrat,
-        view_contrat
+        view_client,
+        view_contrat,
+        view_event
     ]
     support_permissions = [
-        add_event,
-        change_event,
-        delete_event,
+        view_client,
+        view_contrat,
         view_event
     ]
 

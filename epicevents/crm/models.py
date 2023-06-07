@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin, BaseUserManager
 from django.utils import timezone
 
+import datetime
+ISO_date = "2021-12-18"
+default_date= datetime.date.fromisoformat(ISO_date)
+
 
 class CustomAccountManager(BaseUserManager):
 
@@ -12,6 +16,14 @@ class CustomAccountManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
+
+    def create_superuser(self, email, username, first_name, password, **other_fields):
+
+        other_fields.setdefault('is_staff', True)
+        other_fields.setdefault('is_superuser', True)
+        other_fields.setdefault('is_active', True)
+
+        return self.create_user(email, username, first_name, password, **other_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -27,10 +39,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    object = CustomAccountManager()
+    objects = CustomAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'first_name']
 
     def __str__(self):
         return self.username
@@ -41,24 +53,37 @@ class Client(models.Model):
     EXISTANT = "EX"
     STATUS = [("PO", "Potentiel"), ("EX", "Existant")]
 
+    company_name = models.fields.CharField(max_length=100)
     first_name = models.fields.CharField(max_length=25)
     last_name = models.fields.CharField(max_length=25)
+
     email = models.fields.EmailField(max_length=100)
     phone = models.fields.CharField(max_length=25)
-    company_name = models.fields.CharField(max_length=100)
+    sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
     date_created = models.fields.DateTimeField(auto_now_add=True)
     date_updated = models.fields.DateTimeField(auto_now=True)
-    sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    client_status = models.fields.CharField(choices=STATUS)
+
+    client_status = models.fields.CharField(choices=STATUS, default="PO")
+
+    def __str__(self):
+        return self.company_name
 
 
 class Contrat(models.Model):
+
+    internal_contrat_number = models.fields.CharField(max_length=20, default='empty')
+    status = models.fields.BooleanField(default=False, verbose_name='signé',)
+    amount = models.fields.FloatField(default=0.0)
+    payment_due = models.fields.DateTimeField(default=0.0)
+
+    client = models.ForeignKey(Client, null=False, on_delete=models.CASCADE)
+
     date_created = models.fields.DateTimeField(auto_now_add=True)
     date_updated = models.fields.DateTimeField(auto_now=True)
-    status = models.fields.BooleanField
-    amount = models.fields.FloatField
-    payment_due = models.fields.DateTimeField
-    client = models.ForeignKey(Client, null=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.internal_contrat_number
 
 
 class Event(models.Model):
@@ -67,11 +92,17 @@ class Event(models.Model):
     TERMINE = "TE"
     STATUS = [("OR", "Organisation"), ("PR", "Prêt"), ("TE", "Terminé")]
 
-    date_created = models.fields.DateTimeField(auto_now_add=True)
-    date_updated = models.fields.DateTimeField(auto_now=True)
-    attendees = models.fields.IntegerField
-    event_date = models.fields.DateTimeField
+    event_name = models.fields.CharField(max_length=100, default="event")
+    attendees = models.fields.IntegerField()
+    event_date = models.fields.DateTimeField()
     notes = models.fields.CharField(max_length=1000)
+
     contrat = models.ForeignKey(Contrat, null=False, on_delete=models.CASCADE)
     support_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
     event_status = models.fields.CharField(choices=STATUS)
+    date_created = models.fields.DateTimeField(auto_now_add=True)
+    date_updated = models.fields.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.event_name
