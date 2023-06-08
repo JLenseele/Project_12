@@ -2,10 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin, BaseUserManager
 from django.utils import timezone
 
-import datetime
-ISO_date = "2021-12-18"
-default_date= datetime.date.fromisoformat(ISO_date)
-
 
 class CustomAccountManager(BaseUserManager):
 
@@ -77,7 +73,7 @@ class Contrat(models.Model):
     amount = models.fields.FloatField(default=0.0)
     payment_due = models.fields.DateTimeField(default=0.0)
 
-    client = models.ForeignKey(Client, null=False, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, null=False, on_delete=models.CASCADE, related_name='contrat')
 
     date_created = models.fields.DateTimeField(auto_now_add=True)
     date_updated = models.fields.DateTimeField(auto_now=True)
@@ -97,7 +93,7 @@ class Event(models.Model):
     event_date = models.fields.DateTimeField()
     notes = models.fields.CharField(max_length=1000)
 
-    contrat = models.ForeignKey(Contrat, null=False, on_delete=models.CASCADE)
+    contrat = models.ForeignKey(Contrat, null=False, on_delete=models.CASCADE, related_name='event')
     support_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     event_status = models.fields.CharField(choices=STATUS)
