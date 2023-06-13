@@ -30,6 +30,17 @@ class UserAdminConfig(UserAdmin):
     )
     filter_horizontal = ()
 
+    def save_model(self, request, obj, form, change):
+        if change:
+            saler = User.objects.filter(email=obj.email)
+            old_team = saler[0].groups
+            if old_team != obj.groups:
+                clients = Client.objects.filter(sales_contact__in=saler)
+                for client in clients:
+                    client.sales_contact = None
+                    client.save()
+        super().save_model(request, obj, form, change)
+
 
 class ClientAdminConfig(ModelAdmin):
     ordering = ('-date_created',)
