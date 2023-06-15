@@ -25,8 +25,10 @@ class EventPutSerializer(ModelSerializer):
         fields = ['event_name', 'attendees', 'event_date', 'notes', 'event_status']
 
     def validate_event_name(self, value):
-        if Event.objects.filter(event_name=value).exists():
-            raise serializers.ValidationError('Event name already exist')
+        qr = Event.objects.filter(event_name=value)
+        if qr.exists():
+            raise serializers.ValidationError("Ce nom d'evenement existe déja")
+        return value
 
 
 class ContratSerializer(ModelSerializer):
@@ -56,7 +58,8 @@ class ContratPutSerializer(ModelSerializer):
 
     def validate_internal_contrat_number(self, value):
         if Contrat.objects.filter(internal_contrat_number=value).exists():
-            raise serializers.ValidationError('Contrat number name already exist')
+            raise serializers.ValidationError('Contrat number already exist')
+        return value
 
 
 class ClientSerializer(ModelSerializer):
@@ -88,3 +91,4 @@ class ClientPutSerializer(ModelSerializer):
     def validate_company_name(self, value):
         if Client.objects.filter(company_name=value).exists():
             raise serializers.ValidationError('Company name name already exist')
+        return value

@@ -5,11 +5,10 @@ from django.contrib.admin import ModelAdmin
 
 
 class UserAdminConfig(UserAdmin):
-
     ordering = ('-start_date',)
     list_display = ('email', 'username', 'first_name', 'groups',
                     'is_active', 'is_staff')
-    list_filter = ('email', 'username', 'groups')
+    list_filter = ('groups', 'is_active')
     search_fields = ('email', 'username', 'groups')
     fieldsets = [
         ('User Information',
@@ -29,8 +28,16 @@ class UserAdminConfig(UserAdmin):
              'groups', 'is_active', 'is_staff',), },),
     )
     filter_horizontal = ()
+    radio_fields = {'groups': admin.VERTICAL}
 
     def save_model(self, request, obj, form, change):
+        """
+            Check if each competition are already passed or no
+            & add keyword 'valid' set on True or False
+
+            :param: competitions: list of competitions
+            :return: list of competitions
+        """
         if change:
             saler = User.objects.filter(email=obj.email)
             old_team = saler[0].groups
@@ -56,6 +63,17 @@ class ClientAdminConfig(ModelAdmin):
          {
              'fields': ['email', 'phone', 'sales_contact', 'client_status'], },),
     ]
+    radio_fields = {'client_status': admin.VERTICAL}
+
+    @admin.action(description="client status = Existant")
+    def client_status_ex(self, request, query):
+        query.update(client_status="EX")
+
+    @admin.action(description="client status = Potentiel")
+    def client_status_po(self, request, query):
+        query.update(client_status="PO")
+
+    actions = [client_status_ex, client_status_po]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'sales_contact':
@@ -65,8 +83,9 @@ class ClientAdminConfig(ModelAdmin):
 
 class EventAdminConfig(ModelAdmin):
     ordering = ('-date_created',)
-    list_display = ('event_name', 'attendees', 'event_date', 'support_contact', 'contrat')
-    list_filter = ('event_date', 'support_contact')
+    list_display = ('event_name', 'attendees', 'event_date', 'support_contact', 'contrat', 'event_status')
+    list_display_links = ('event_name', 'support_contact', 'contrat')
+    list_filter = ('event_date', 'support_contact', 'event_status')
     search_fields = ('event_name',)
 
     fieldsets = [
@@ -80,6 +99,21 @@ class EventAdminConfig(ModelAdmin):
          {
              'fields': ['event_status', 'notes'], },),
     ]
+    radio_fields = {'event_status': admin.VERTICAL}
+
+    @admin.action(description="event status = Organisation")
+    def event_status_or(self, request, query):
+        query.update(event_status="OR")
+
+    @admin.action(description="event status = Prêt")
+    def event_status_pr(self, request, query):
+        query.update(event_status="PR")
+
+    @admin.action(description="event status = Terminé")
+    def event_status_te(self, request, query):
+        query.update(event_status="TE")
+
+    actions = [event_status_te, event_status_or, event_status_pr]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'support_contact':

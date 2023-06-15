@@ -16,17 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
+from rest_framework_nested import routers
 
 from crm.views import ClientViewset, ContratViewset, EventViewset
 
 router = routers.SimpleRouter()
-router.register('client', ClientViewset, basename='client')
-router.register('contrat', ContratViewset, basename='contrat')
-router.register('event', EventViewset, basename='event')
+router.register(r'client', ClientViewset, basename='client')
+
+client_router = routers.NestedSimpleRouter(router, r'client', lookup='client')
+client_router.register(r'contrat', ContratViewset, basename='contrat')
+
+contrat_router = routers.NestedSimpleRouter(client_router, r'contrat', lookup='contrat')
+contrat_router.register(r'event', EventViewset, basename='event')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/', include(client_router.urls)),
+    path('api/', include(contrat_router.urls)),
 ]

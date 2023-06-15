@@ -1,8 +1,8 @@
 from rest_framework.permissions import BasePermission
 from .models import Client, Contrat, Event
 
-EDIT_METHOD = ['DELETE', 'PUT', 'PATCH']
-SAFE_METHOD = ['POST', 'GET']
+EDIT_METHOD = ['DELETE', 'PUT', 'PATCH', 'POST']
+SAFE_METHOD = ['GET']
 
 
 class IsAuthenticated(BasePermission):
@@ -12,6 +12,13 @@ class IsAuthenticated(BasePermission):
 
 
 class IsClientContact(IsAuthenticated):
+
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            user = request.user
+            print(user.groups)
+            if user.groups.name == 'sales':
+                return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHOD:
@@ -28,6 +35,12 @@ class IsClientContact(IsAuthenticated):
 
 
 class IsEventSupport(IsAuthenticated):
+
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            if request.method == 'POST':
+                return False
+            return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHOD:

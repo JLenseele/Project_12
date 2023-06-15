@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin, BaseUserManager
 from django.utils import timezone
+from rest_framework.validators import UniqueValidator
 
 
 class CustomAccountManager(BaseUserManager):
