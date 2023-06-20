@@ -16,9 +16,18 @@ class IsClientContact(IsAuthenticated):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             user = request.user
-            print(user.groups)
-            if user.groups.name == 'sales':
+
+            if request.method in SAFE_METHOD:
                 return True
+            elif user.groups.name == 'sales':
+                try:
+                    client = Client.objects.filter(id=view.kwargs['client_pk'])
+                    if client[0]:
+                        obj = client[0]
+                        if user == obj.sales_contact:
+                            return True
+                except KeyError:
+                    return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHOD:

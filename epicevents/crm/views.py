@@ -29,7 +29,7 @@ class ClientViewset(ModelViewSet):
         return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
-        serializer = EventPutSerializer(data=request.data)
+        serializer = ClientPutSerializer(data=request.data)
         user = request.user
         if serializer.is_valid():
             if user.groups.name == "sales":
@@ -101,7 +101,6 @@ class EventViewset(ModelViewSet):
         return
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action in ['update', 'create']:
             return self.put_serializer_class
         elif self.action == 'retrieve':

@@ -7,14 +7,14 @@ class EventSerializer(ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['event_name', 'attendees', 'event_date', 'contrat']
+        fields = ['id', 'event_name', 'attendees', 'event_date', 'contrat']
 
 
 class EventDetailSerializer(EventSerializer):
 
     class Meta:
         model = Event
-        fields = ['event_name', 'attendees', 'event_date', 'contrat', 'notes',
+        fields = ['id', 'event_name', 'attendees', 'event_date', 'contrat', 'notes',
                   'support_contact', 'event_status']
 
 
@@ -26,7 +26,7 @@ class EventPutSerializer(ModelSerializer):
 
     def validate_event_name(self, value):
         qr = Event.objects.filter(event_name=value)
-        if qr.exists():
+        if qr.exists() and self.context["request"].method != "PUT":
             raise serializers.ValidationError("Ce nom d'evenement existe déja")
         return value
 
@@ -37,7 +37,7 @@ class ContratSerializer(ModelSerializer):
 
     class Meta:
         model = Contrat
-        fields = ['internal_contrat_number', 'amount', 'client', 'event']
+        fields = ['id', 'internal_contrat_number', 'amount', 'client', 'event']
 
 
 class ContratDetailSerializer(ModelSerializer):
@@ -46,7 +46,7 @@ class ContratDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Contrat
-        fields = ['internal_contrat_number', 'status', 'amount', 'payment_due', 'client',
+        fields = ['id', 'internal_contrat_number', 'status', 'amount', 'payment_due', 'client',
                   'date_created', 'date_updated', 'event']
 
 
@@ -57,7 +57,8 @@ class ContratPutSerializer(ModelSerializer):
         fields = ['internal_contrat_number', 'amount', 'payment_due', 'status']
 
     def validate_internal_contrat_number(self, value):
-        if Contrat.objects.filter(internal_contrat_number=value).exists():
+        qr = Contrat.objects.filter(internal_contrat_number=value).exists()
+        if qr.exists() and self.context["request"].method != "PUT":
             raise serializers.ValidationError('Contrat number already exist')
         return value
 
@@ -68,7 +69,7 @@ class ClientSerializer(ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ['company_name', 'email', 'sales_contact', 'client_status', 'contrat']
+        fields = ['id', 'company_name', 'email', 'sales_contact', 'client_status', 'contrat']
 
 
 class ClientDetailSerializer(ModelSerializer):
@@ -77,7 +78,7 @@ class ClientDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ['company_name', 'first_name', 'last_name', 'email', 'phone',
+        fields = ['id', 'company_name', 'first_name', 'last_name', 'email', 'phone',
                   'date_created', 'date_updated',
                   'sales_contact', 'client_status', 'contrat']
 
@@ -89,6 +90,7 @@ class ClientPutSerializer(ModelSerializer):
         fields = ['company_name', 'first_name', 'last_name', 'email', 'phone', 'client_status']
 
     def validate_company_name(self, value):
-        if Client.objects.filter(company_name=value).exists():
+        qr = Client.objects.filter(company_name=value).exists()
+        if qr.exists() and self.context["request"].method != "PUT":
             raise serializers.ValidationError('Company name name already exist')
         return value
