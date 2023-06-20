@@ -141,3 +141,5 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 4
 }
+
+LOGIN_REDIRECT_URL = '/api/client/'
