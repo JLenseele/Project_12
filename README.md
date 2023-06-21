@@ -3,6 +3,9 @@
 ## Requirements
 
 + [Python v3+](https://www.python.org/downloads/)
++ [Django](https://www.djangoproject.com/download/)
++ [Django REST](https://www.django-rest-framework.org/)
++ [PostGres SQL](https://www.postgresql.org/download/)
 
 ## Installation & Get Started
 
@@ -21,8 +24,47 @@
 
     python epicevent\manage.py runserver
 
-## Documentation POSTMAN
+## Current Setup
 
-Vous trouverez sur le lien suivant, la documentation complète des différents EndPoints de l'API  
+Cette application fonctionne avec une BDD PostGres.  
+db.sqlite3  
+  
+#### Connexion et utilisation
+
+Voici la liste des utilisateurs préalablement enregistrés dans la bdd.
+Ils vous permettront de tester les fonctionnalités du CRM.
+
+Team Management :
+
+    admin@admin.com
+    pwd : admin
+
+    camille@gmail.com
+    pwd : Axr456789
+
+Team Ventes :
+
+    password : Axr456789
+    
+    - xavier@gmail.com
+    - noemie@gmail.com
+
+    READ : All model
+    UPDATE : All model quand l'user est "sales_contact" du client
+    CREATE : Client /
+             Contrat, Event quand l'user est sales_contact du client
     
 
+Team Support :
+
+    password : Axr456789
+
+    - clement@gmail.com
+    - antoine@gmail.com
+
+    READ : All model
+    UPDATE : Evenement dont l'user est "support_contact"
+
+## Contributors
+
+[JLenseele](https://github.com/JLenseele)
