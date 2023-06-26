@@ -70,16 +70,6 @@ class ContratViewset(ModelViewSet):
             serializer.save(
                 client=client
             )
-            with transaction.atomic():
-                event = EventPutSerializer(data=None)
-                qr = Contrat.objects.get(internal_contrat_number=serializer.validated_data["internal_contrat_number"])
-                if event.is_valid():
-                    event.save(
-                        attendees=0,
-                        event_date='2000-01-01T00:00:00Z',
-                        contrat=qr,
-                        event_status="OR"
-                    )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_200_OK)

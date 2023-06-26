@@ -18,11 +18,16 @@
 
     python -m venv env
     env\Scripts\activate
-    pip install -r requirements.txt
+    pip install -r requierments.txt
     
 #### Lancer le serveur
 
-    python epicevent\manage.py runserver
+    python epicevents\manage.py runserver
+
+
+L'application est maintenant lancé en local sur votre poste.
+
+url de connexion: http://127.0.0.1:8000/api/login/
 
 ## Current Setup
 

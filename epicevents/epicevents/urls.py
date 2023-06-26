@@ -31,7 +31,7 @@ contrat_router.register(r'event', EventViewset, basename='event')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
+    path('api/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
     path('api/', include(client_router.urls)),
     path('api/', include(contrat_router.urls)),
